@@ -1,0 +1,13 @@
+streamlit
+google-cloud-aiplatform
+google-cloud-discoveryengine
+langchain
+langchain-community
+langchain-core
+langchain-google-community
+langchain-google-vertexai
+langchain-text-splitters
+python-dotenv
+sentry-sdk
+pandas
+requests
