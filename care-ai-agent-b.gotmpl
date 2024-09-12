@@ -1,0 +1,70 @@
+serviceName: {{ .Values.name }}-b
+namespace: {{ .Values.team }}
+environment: {{ .Values.environment }}
+
+labels:
+  - name: app
+    value: {{ .Values.name }}-b
+  - name: team
+    value: {{ .Values.team }}
+
+containers:
+  ports:
+    - name: http
+      containerPort: 3000
+      protocol: TCP
+
+service:
+  create: true
+  portName: http
+  port: 80
+  targetPort: 3000
+
+ingress:
+  enabled: true
+
+serviceMonitor:
+  enabled: false
+
+monitoring:
+  dashboard: true
+
+alerts:
+  enabled: true
+  name: {{ .Values.name }}-b
+  team: {{ .Values.team }}
+  project: {{ .Values.name }}-b
+  environment: {{ .Values.environment }}
+  receivers:
+    slackChannels: {{ .Values.alerts.slackChannels }}
+  groupWait: 30s
+  groupInterval: 5m
+  repeatInterval: 1m
+
+probes:
+  healthCheckPath: /
+  liveness:
+    enabled: true
+    initialDelaySeconds: 15
+    periodSeconds: 60
+    failureThreshold: 3
+    timeoutSeconds: 5
+
+resources:
+  {{- .Values.app.resources | toYaml | nindent 2 }}
+
+replicaCount: {{ .Values.app.replicas }}
+autoscaling:
+  enabled: true
+  {{- .Values.app.autoscaling | toYaml | nindent 2 }}
+
+image:
+  repository: {{ .Values.app.repository }}
+  pullPolicy: IfNotPresent
+
+vaultSecrets:
+  team:
+    create: true
+    name: {{ .Values.name }}-b-secrets
+    paths:
+      - care-ai-agent-b/app
